@@ -2,6 +2,10 @@ import argparse
 import importlib
 import sys
 
+import uvicorn
+
+from book_generator.web import fast_api
+
 
 def main():
     parser = argparse.ArgumentParser(description="Book generator")
@@ -11,6 +15,8 @@ def main():
     script = load_script(args)
 
     book = script.get_book()
+
+    uvicorn.run(fast_api, host="127.0.0.1", port=8000)
 
 
 def load_script(args):

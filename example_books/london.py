@@ -5,6 +5,7 @@ from book_generator.data_model.photo import Photo
 
 def get_book() -> Book:
     return Book(
+        "London",
         Page(
             Photo('https://unsplash.com/photos/jAj5yVH8Ooc/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTl8fGxvbmRvbnxlbnwwfHx8fDE3MjM0NTI2MTF8MA&force=true&w=640')
         ),

@@ -11,7 +11,7 @@ classDiagram
     direction LR
     class Book {
         Cover cover
-        List<Spread> spreads
+        List~Spread~ spreads
         render_all_pages()
     }
 
@@ -47,14 +47,29 @@ classDiagram
         render(render_path, page_number)
     }
 
+    class Element {
+        render_on_page(template, box)
+    }
+    
+    class Photo {
 
+    }
+
+    class Text {
+
+    }
+    
+    TwoPageTemplateSpread "1" *-- "1" TwoPageTemplate
     Book "1" *-- "1" Cover
     Book "1" *-- "*" Spread
     Cover "1" *-- "1" Spread
     Template<|-- "1" TwoPageTemplate
-    Spread<|--TwoPageTemplateSpread
-    Spread<|--TwoSinglePagesTemplateSpread
-    TwoPageTemplateSpread*--TwoPageTemplate
-    TwoSinglePagesTemplateSpread*--OnePageTemplate
     Template<|-- "2" OnePageTemplate
+    Spread "0" <|-- "1" TwoPageTemplateSpread
+    Spread "0" <|-- "1" TwoSinglePagesTemplateSpread
+    TwoSinglePagesTemplateSpread "1" *-- "2" OnePageTemplate
+    Element<|--Photo
+    Element<|--Text
+    TwoPageTemplate*--Element
+    OnePageTemplate*--Element
 ```

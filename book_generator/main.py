@@ -15,7 +15,7 @@ def main():
     script = load_script(args.bookscript)
 
     book = script.get_book()
-    book.render_all_pages()
+    book.render_all_spreads()
 
     uvicorn.run(fast_api, host="127.0.0.1", port=8000)
 

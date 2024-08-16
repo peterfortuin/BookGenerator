@@ -1,6 +1,6 @@
-from book_generator.data_model.spread import Spread, TwoSinglePagesTemplateSpread
-from book_generator.data_model.book import Book
-from book_generator.data_model.photo import Photo
+from book_generator.generator.spread import Spread, TwoSinglePagesTemplateSpread
+from book_generator.generator.book import Book
+from book_generator.generator.photo import Photo
 from templates.single_page_templates.one_photo_template import OnePhotoTemplate
 
 

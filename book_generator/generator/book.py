@@ -1,8 +1,6 @@
 import os
 
-from data_model.page import Page
-from data_model.spread import Spread
-from PIL import Image
+from generator.spread import Spread
 
 
 class Book:
@@ -22,9 +20,3 @@ class Book:
 
     def get_page_size(self) -> (int, int):
         return int(self.width_in_cm / 2.54 * 300), int(self.height_in_cm / 2.54 * 300)
-
-    def create_empty_page(self, render_path: str) -> Page:
-        return Page(
-            Image.new("RGB", self.get_page_size(), color=0xFFFFFF),
-            render_path,
-        )

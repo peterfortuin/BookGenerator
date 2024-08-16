@@ -21,44 +21,44 @@ classDiagram
     }
 
     class Spread {
-        render(render_path, page_number)
+        render(book: Book, render_path: str, page_number: int)
     }
 
     class TwoPageTemplateSpread {
         TwoPageTemplate template
-        render(render_path, page_number)
+        render(book: Book, render_path: str, page_number: int)
     }
 
     class TwoSinglePagesTemplateSpread {
         OnePageTemplate leftTemplate
         OnePageTemplate rightTemplate
-        render(render_path, page_number)
+        render(book: Book, render_path: str, page_number: int)
     }
 
     class Template {
-        render(render_path, page_number)
+        render(image: Image)
     }
 
     class TwoPageTemplate {
-        render(render_path, page_number)
+        render(image: Image)
     }
 
     class OnePageTemplate {
-        render(render_path, page_number)
+        render(image: Image)
     }
 
     class Element {
-        render_on_page(template, box)
+        render(image: Image)
     }
     
     class Photo {
-
+        render(image: Image)
     }
 
     class Text {
-
+        render(image: Image)
     }
-    
+
     TwoPageTemplateSpread "1" *-- "1" TwoPageTemplate
     Book "1" *-- "1" Cover
     Book "1" *-- "*" Spread

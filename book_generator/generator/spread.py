@@ -31,8 +31,11 @@ class TwoPageTemplateSpread(Spread):
 
     def render(self, book: 'Book', render_dir: str, page_number: int):
         logger.info(f"Rendering page {page_number}")
-        self.template.render(self.get_render_section(book.width_in_cm * 2, book.height_in_cm))
-        self.save(render_dir, page_number)
+        spread_image = self.template.render(self.get_render_section(book.width_in_cm * 2, book.height_in_cm))
+        left_page = spread_image.crop((0, 0, spread_image.width / 2, spread_image.height))
+        right_page = spread_image.crop((spread_image.width / 2, 0, spread_image.width, spread_image.height))
+        self.save(left_page, render_dir, page_number)
+        self.save(right_page, render_dir, page_number + 1)
 
 
 class TwoSinglePagesTemplateSpread(Spread):

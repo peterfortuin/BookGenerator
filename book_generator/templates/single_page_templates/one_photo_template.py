@@ -10,4 +10,4 @@ class OnePhotoTemplate(OnePageTemplate):
         self.photo = photo
 
     def render(self, image: Image) -> Image:
-        return draw_on_region(image, 5, 5, 95, 95, self.photo.render)
+        return draw_on_region(image, 0, 0, 100, 100, self.photo.render)

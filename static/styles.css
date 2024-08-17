@@ -1,0 +1,14 @@
+body {
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center; /* horizontal alignment */
+    align-items: center; /* vertical alignment */
+    height: 100vh; /* full viewport height for vertical centering */
+}
+
+.flip-book {
+    border-style: outset;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+    max-width: 90vw !important;
+    max-height: 80vh;
+}

@@ -17,8 +17,9 @@ class Photo(Element):
             self.photo = Image.open(path)
 
     def render(self, image: Image) -> Image:
-        draw = ImageDraw.Draw(image)
-        draw.rectangle((0, 0, image.width - 1, image.height - 1), fill=None, outline=0)
+        # Debug rectangles
+        # draw = ImageDraw.Draw(image)
+        # draw.rectangle((0, 0, image.width - 1, image.height - 1), fill=None, outline=0)
 
         # Calculate the scaling factor to maintain aspect ratio
         src_width, src_height = self.photo.size

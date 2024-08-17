@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Page Flip</title>
+</head>
+<body>
+
+<div class="flip-book" id="bookElement">
+</div>
+
+<script src="static/page-flip.browser.js"></script>
+<script>
+    const bookElement = document.getElementById("bookElement");
+    const pageFlip = new St.PageFlip(bookElement, {
+        width: 400,
+        height: 400,
+        size: "stretch",
+        minWidth: 315,
+        maxWidth: 1000,
+        minHeight: 420,
+        maxHeight: 1350,
+        maxShadowOpacity: 0.1,
+        showCover: false,
+        mobileScrollSupport: false
+    });
+
+    pageFlip.loadFromImages([
+        'renders/London/page_001.jpg',
+        'renders/London/page_002.jpg',
+        'renders/London/page_003.jpg',
+        'renders/London/page_004.jpg'
+    ]);
+</script>
+
+</body>
+</html>

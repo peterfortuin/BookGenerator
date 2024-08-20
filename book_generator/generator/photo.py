@@ -1,14 +1,14 @@
 from urllib.request import urlopen
 
-from PIL import ImageDraw, Image
-from PIL.Image import Resampling
+from PIL import Image, ExifTags
+from PIL.Image import Resampling, Transpose
 
 from generator.element import Element
 
 
 class Photo(Element):
 
-    def __init__(self, path, render_inside: bool = True, crop_bias: int = 50):
+    def __init__(self, path, render_inside: bool = False, crop_bias: int = 50):
         self.path = path
         self.render_inside = render_inside
         self.crop_bias = crop_bias
@@ -17,6 +17,8 @@ class Photo(Element):
             self.photo = Image.open(urlopen(self.path))
         else:
             self.photo = Image.open(path)
+
+        self.photo = correct_image_orientation(self.photo)
 
     def render(self, image: Image) -> Image:
         # Ensure crop_bias is between 0 and 100
@@ -64,3 +66,38 @@ class Photo(Element):
         image.paste(resized_src_img, (paste_x, paste_y))
 
         return image
+
+
+def correct_image_orientation(image: Image) -> Image:
+    # Try to get the orientation tag from EXIF data
+    try:
+        orientation = 0
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = image.getexif()
+
+        if exif is not None:
+            orientation = exif.get(orientation, 1)
+
+            # Apply the necessary rotation or flipping based on the orientation value
+            if orientation == 3:
+                image = image.rotate(180, expand=True)
+            elif orientation == 6:
+                image = image.rotate(270, expand=True)
+            elif orientation == 8:
+                image = image.rotate(90, expand=True)
+            elif orientation == 2:
+                image = image.transpose(Transpose.FLIP_LEFT_RIGHT)
+            elif orientation == 4:
+                image = image.transpose(Transpose.FLIP_TOP_BOTTOM)
+            elif orientation == 5:
+                image = image.transpose(Transpose.FLIP_LEFT_RIGHT).rotate(270, expand=True)
+            elif orientation == 7:
+                image = image.transpose(Transpose.FLIP_LEFT_RIGHT).rotate(90, expand=True)
+
+    except (AttributeError, KeyError, IndexError):
+        # If there's no EXIF data or an error occurs, the image orientation is assumed to be normal
+        pass
+
+    return image

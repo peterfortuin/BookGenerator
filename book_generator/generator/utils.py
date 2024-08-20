@@ -3,12 +3,12 @@ from typing import Callable
 from PIL import Image
 
 
-def draw_on_region(image: Image, left: int, top: int, right: int, bottom: int, method: Callable[[Image], Image]) -> Image:
+def draw_on_region(image: Image, left: float, top: float, right: float, bottom: float, method: Callable[[Image], Image]) -> Image:
     # Ensure x1, y1, x2, y2 are within the range [0, 100]
-    left = max(0, min(100, left))
-    top = max(0, min(100, top))
-    right = max(0, min(100, right))
-    bottom = max(0, min(100, bottom))
+    left = max(0.0, min(100.0, left))
+    top = max(0.0, min(100.0, top))
+    right = max(0.0, min(100.0, right))
+    bottom = max(0.0, min(100.0, bottom))
 
     # Convert percentages to pixel values
     dst_width, dst_height = image.size

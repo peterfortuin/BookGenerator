@@ -22,10 +22,9 @@ class Spread:
 
     @staticmethod
     def save(image: Image, render_dir: str, page_number: int):
-        render_path = f"{render_dir}/page_{page_number:03d}.jpg"
         image = image.convert("RGB")
 
-        image.save(render_path)
+        image.save(f"{render_dir}/page_{page_number:03d}.jpeg", dpi=(300, 300), quality=100)
 
 
 class TwoPageTemplateSpread(Spread):

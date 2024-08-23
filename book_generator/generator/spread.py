@@ -17,11 +17,14 @@ class Spread:
     def get_render_section(width_in_cm: float, height_in_cm: float):
         width_in_pixels = int(width_in_cm / 2.54 * 300)
         height_in_pixels = int(height_in_cm / 2.54 * 300)
-        return Image.new("RGB", (width_in_pixels, height_in_pixels), color=0xFFFFFF)
+
+        return Image.new("RGBA", (width_in_pixels, height_in_pixels), color=0xFFFFFF)
 
     @staticmethod
     def save(image: Image, render_dir: str, page_number: int):
         render_path = f"{render_dir}/page_{page_number:03d}.jpg"
+        image = image.convert("RGB")
+
         image.save(render_path)
 
 

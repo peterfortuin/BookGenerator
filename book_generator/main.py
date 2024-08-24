@@ -1,33 +1,32 @@
 import argparse
-import importlib
-import sys
 
 import uvicorn
+from dependency_injector.wiring import inject, Provide, register_loader_containers
 
 from book_generator.web import fast_api
+from containers.book_generator_container import BookGeneratorContainer
+from services.book_service import BookService
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Book generator")
-    parser.add_argument("bookscript", type=str, help="Path to script that describes the book to render.")
-    args = parser.parse_args()
+@inject
+def main(book_service: BookService = Provide[BookGeneratorContainer.book_service]):
+    args = argument_parser()
 
-    script = load_script(args.bookscript)
-
-    book = script.get_book()
-    book.render_all_spreads()
+    book_service.set_book_script(args.bookscript)
 
     uvicorn.run(fast_api, host="127.0.0.1", port=8000)
 
 
-def load_script(bookscript):
-    spec = importlib.util.spec_from_file_location("book_generator.script", bookscript)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["book_generator.script"] = module
-    spec.loader.exec_module(module)
-
-    return module
+def argument_parser():
+    parser = argparse.ArgumentParser(description="Book generator")
+    parser.add_argument("bookscript", type=str, help="Path to script that describes the book to render.")
+    args = parser.parse_args()
+    return args
 
 
 if __name__ == "__main__":
+    container = BookGeneratorContainer()
+    container.wire(modules=[__name__])
+    register_loader_containers(container)
+
     main()

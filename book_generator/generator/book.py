@@ -16,6 +16,7 @@ class Book:
 
         for index, spread in enumerate(self.spreads):
             page_number = index * 2 + 1
+            print(f"Rendering spread {index + 1} of {len(self.spreads)}.")
             spread.render(self, self.render_dir, page_number)
 
     def get_page_size(self) -> (int, int):

@@ -1,6 +1,14 @@
 import importlib
 import sys
+import types
 from typing import Optional
+
+from generator.book import Book
+
+
+class ScriptModuleInterface(types.ModuleType):
+    def get_book(self) -> Book:
+        pass
 
 
 class BookService:
@@ -17,7 +25,7 @@ class BookService:
         book.render_all_spreads()
 
     @staticmethod
-    def load_script(book_script):
+    def load_script(book_script) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", book_script)
         module = importlib.util.module_from_spec(spec)
         sys.modules["book_generator.script"] = module

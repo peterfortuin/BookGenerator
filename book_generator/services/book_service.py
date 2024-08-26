@@ -17,6 +17,7 @@ class BookService:
         self._book_script: Optional[str] = None
         self._script_module: Optional[ScriptModuleInterface] = None
         self._script_watcher: Optional[FileWatcher] = None
+        self._book: Optional[Book] = None
 
     def set_book_script(self, book_script: str):
         if self._script_watcher is not None:
@@ -32,8 +33,8 @@ class BookService:
         self._script_watcher.start()
 
     def generate_book(self):
-        book = self._script_module.get_book()
-        book.render_all_spreads()
+        self._book = self._script_module.get_book()
+        self._book.render_all_spreads()
 
     def _load_script(self) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", self._book_script)
@@ -46,3 +47,9 @@ class BookService:
     def _reload_script(self):
         self._script_module = self._load_script()
         self.generate_book()
+
+    def get_number_of_pages(self) -> int:
+        return self._book.get_number_of_pages()
+
+    def get_render_dir(self) -> str:
+        return self._book.get_render_dir()

@@ -11,7 +11,7 @@ class Book:
         self.width_in_cm = width_in_cm
         self.height_in_cm = height_in_cm
 
-    def render_all_spreads(self):
+    def render_all_spreads(self) -> int:
         os.makedirs(self.render_dir, exist_ok=True)
 
         for index, spread in enumerate(self.spreads):
@@ -21,3 +21,9 @@ class Book:
 
     def get_page_size(self) -> (int, int):
         return int(self.width_in_cm / 2.54 * 300), int(self.height_in_cm / 2.54 * 300)
+
+    def get_number_of_pages(self) -> int:
+        return len(self.spreads) * 2
+
+    def get_render_dir(self) -> str:
+        return self.render_dir

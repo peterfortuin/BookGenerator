@@ -3,9 +3,9 @@ import argparse
 import uvicorn
 from dependency_injector.wiring import inject, Provide, register_loader_containers
 
-from book_generator.web import fast_api
-from containers.book_generator_container import BookGeneratorContainer
+from containers.book_generator_container import BookGeneratorContainer, book_generator_container
 from services.book_service import BookService
+from web.web import fast_api
 
 
 @inject
@@ -25,8 +25,12 @@ def argument_parser():
 
 
 if __name__ == "__main__":
-    container = BookGeneratorContainer()
-    container.wire(modules=[__name__])
-    register_loader_containers(container)
+    book_generator_container.wire(
+        modules=[
+            __name__,
+            "web.web"
+        ]
+    )
+    register_loader_containers(book_generator_container)
 
     main()

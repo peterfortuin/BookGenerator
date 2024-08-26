@@ -28,10 +28,9 @@
     });
 
     pageFlip.loadFromImages([
-        'renders/London/page_001.jpg',
-        'renders/London/page_002.jpg',
-        'renders/London/page_003.jpg',
-        'renders/London/page_004.jpg'
+        {% for i in range(1, number_of_pages + 1) %}
+            '{{render_dir}}/page_{{ "%0{}d".format(3)|format(i) }}.jpeg',
+        {% endfor %}
     ]);
 </script>
 

@@ -1,7 +1,8 @@
+import asyncio
 import importlib
 import sys
 import types
-from typing import Optional
+from typing import Optional, Dict
 
 from generator.book import Book
 from utils.filewatcher import FileWatcher
@@ -34,7 +35,14 @@ class BookService:
 
     def generate_book(self):
         self._book = self._script_module.get_book()
-        self._book.render_all_spreads()
+
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        loop.run_until_complete(self._book.render_all_spreads())
 
     def _load_script(self) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", self._book_script)
@@ -53,3 +61,6 @@ class BookService:
 
     def get_render_dir(self) -> str:
         return self._book.get_render_dir()
+
+    async def wait_until_event(self) -> Dict[str, str]:
+        return await self._book.wait_until_event()

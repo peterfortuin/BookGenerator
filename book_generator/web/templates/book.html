@@ -32,6 +32,49 @@
             '{{render_dir}}/page_{{ "%0{}d".format(3)|format(i) }}.jpeg',
         {% endfor %}
     ]);
+
+    function createWebSocket(url, reconnectInterval = 1000) {
+        let socket;
+
+        function connect() {
+            socket = new WebSocket(url);
+
+            socket.onopen = function(event) {
+                console.log('WebSocket connection opened:', event);
+            };
+
+            socket.onmessage = function(event) {
+                console.log('WebSocket message received:', event.data);
+                // Handle the received message
+            };
+
+            socket.onclose = function(event) {
+                console.log('WebSocket connection closed:', event);
+                reconnect();
+            };
+
+            socket.onerror = function(error) {
+                console.log('WebSocket error:', error);
+                socket.close(); // Close the socket on error to trigger reconnect
+            };
+        }
+
+        function reconnect() {
+            console.log(`Reconnecting in ${reconnectInterval / 1000} seconds...`);
+
+            setTimeout(function() {
+                console.log('Attempting to reconnect...');
+                connect();
+            }, reconnectInterval);
+        }
+
+        // Initial connection
+        connect();
+    }
+
+    // Usage
+    createWebSocket('ws://localhost:8000/ws'); // Reconnect every 2 seconds
+
 </script>
 
 </body>

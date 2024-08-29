@@ -28,7 +28,8 @@ if __name__ == "__main__":
     book_generator_container.wire(
         modules=[
             __name__,
-            "web.web"
+            "web.index",
+            "web.websocket"
         ]
     )
     register_loader_containers(book_generator_container)

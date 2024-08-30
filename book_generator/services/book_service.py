@@ -1,10 +1,10 @@
-import asyncio
 import importlib
 import sys
 import types
 from typing import Optional, Dict
 
 from generator.book import Book
+from utils.asyncio_thread import AsyncioThread
 from utils.filewatcher import FileWatcher
 
 
@@ -19,6 +19,8 @@ class BookService:
         self._script_module: Optional[ScriptModuleInterface] = None
         self._script_watcher: Optional[FileWatcher] = None
         self._book: Optional[Book] = None
+        self._thread = AsyncioThread()
+        self._thread.start()
 
     def set_book_script(self, book_script: str):
         if self._script_watcher is not None:
@@ -36,13 +38,9 @@ class BookService:
     def generate_book(self):
         self._book = self._script_module.get_book()
 
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        self._thread.schedule_task(self._book.render_all_spreads())
 
-        loop.run_until_complete(self._book.render_all_spreads())
+
 
     def _load_script(self) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", self._book_script)

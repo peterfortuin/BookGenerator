@@ -1,14 +1,19 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from dependency_injector.wiring import Provide, inject
+from fastapi import FastAPI, Depends
 from starlette.staticfiles import StaticFiles
 
-from containers.book_generator_container import book_generator_container
+from containers.book_generator_container import book_generator_container, BookGeneratorContainer
+from services.book_service import BookService
 from . import websocket, index
+from .websocket import start_queue_listener
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+@inject
+async def lifespan(app: FastAPI, book_service: BookService = Depends(Provide[BookGeneratorContainer.book_service])):
+    await start_queue_listener(book_service.event_queue)
     yield
 
 

@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 import sys
 import types
@@ -21,6 +22,7 @@ class BookService:
         self._book: Optional[Book] = None
         self._thread = AsyncioThread()
         self._thread.start()
+        self.event_queue = asyncio.Queue()
 
     def set_book_script(self, book_script: str):
         if self._script_watcher is not None:
@@ -38,9 +40,7 @@ class BookService:
     def generate_book(self):
         self._book = self._script_module.get_book()
 
-        self._thread.schedule_task(self._book.render_all_spreads())
-
-
+        self._thread.schedule_task(self._book.render_all_spreads(self.event_queue))
 
     def _load_script(self) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", self._book_script)
@@ -59,6 +59,3 @@ class BookService:
 
     def get_render_dir(self) -> str:
         return self._book.get_render_dir()
-
-    async def wait_until_event(self) -> Dict[str, str]:
-        return await self._book.wait_until_event()

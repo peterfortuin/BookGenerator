@@ -1,5 +1,6 @@
 import asyncio
 import os
+from asyncio import Queue
 from typing import Dict
 
 from generator.spread import Spread
@@ -15,8 +16,8 @@ class Book:
         self._render_events = asyncio.Event()
         self._render_result = None
 
-    async def render_all_spreads(self):
-        self.fire_event({"state": "rendering"})
+    async def render_all_spreads(self, event_queue: Queue):
+        await event_queue.put({"state": "rendering"})
 
         os.makedirs(self.render_dir, exist_ok=True)
 
@@ -25,7 +26,7 @@ class Book:
             print(f"Rendering spread {index + 1} of {len(self.spreads)}.")
             spread.render(self, self.render_dir, page_number)
 
-        self.fire_event({"state": "rendering_completed"})
+        await event_queue.put({"state": "rendering_completed"})
 
     def fire_event(self, data: Dict[str, str]):
         print(f"Book event: {data["state"]}")

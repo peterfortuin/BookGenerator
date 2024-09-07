@@ -1,6 +1,7 @@
 import asyncio
 from enum import Enum
 from queue import Queue
+from typing import Optional, List
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from containers.book_generator_container import BookGeneratorContainer
+from generator.book import RenderUpdate, RenderState
 from services.book_service import BookService
 
 
@@ -20,11 +22,13 @@ class WebSocketMessageTypes(Enum):
 
 class WebSocketMessage(BaseModel):
     type: WebSocketMessageTypes
-    data: str | None = None
+    data: Optional[List[str]] = None
 
 
 router = APIRouter()
 connected_clients: list[WebSocket] = list()
+
+last_update: Optional[WebSocketMessage] = None
 
 
 @router.websocket("/ws")
@@ -35,9 +39,12 @@ async def websocket_endpoint(
 ):
     await websocket.accept()
 
-    await websocket.send_json(
-        WebSocketMessage(type=WebSocketMessageTypes.BookRenderingComplete,
-                         data=str(book_service.get_number_of_pages())).model_dump_json())
+    if last_update is not None:
+        json = last_update.model_dump_json()
+    else:
+        json = WebSocketMessage(type=WebSocketMessageTypes.BookRenderingStart, data=[]).model_dump_json()
+
+    await websocket.send_json(json)
 
     connected_clients.append(websocket)
     try:
@@ -59,22 +66,29 @@ async def start_queue_listener(queue: Queue):
 
 
 async def process_queue(event_queue: Queue):
-    while True:
-        event = await event_queue.get()
+    global last_update
 
-        if event["state"] == "rendering":
-            await broadcast_message(WebSocketMessage(type=WebSocketMessageTypes.BookRenderingStart, data=None))
-        elif event["state"] == "rendering_completed":
-            await broadcast_message(WebSocketMessage(type=WebSocketMessageTypes.BookRenderingComplete, data=None))
+    while True:
+        update: RenderUpdate = await event_queue.get()
+        print(f"Received update: {update}")
+
+        if update.state == RenderState.RENDERING:
+            last_update = WebSocketMessage(type=WebSocketMessageTypes.BookRenderingStart, data=update.page_paths)
+            await broadcast_message(
+                last_update
+            )
+        elif update.state == RenderState.COMPLETED:
+            last_update = WebSocketMessage(type=WebSocketMessageTypes.BookRenderingComplete, data=update.page_paths)
+            await broadcast_message(
+                last_update
+            )
         else:
-            raise Exception(f"Unknown state: {event['state']}")
+            raise Exception(f"Unknown state: {update.state}")
 
 
 async def broadcast_message(json: WebSocketMessage):
     for client in connected_clients:
         try:
-            # await client.send_json(json)
             await client.send_json(json.model_dump_json())
         except WebSocketDisconnect:
             connected_clients.remove(client)
-

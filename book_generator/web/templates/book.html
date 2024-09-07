@@ -27,11 +27,8 @@
         mobileScrollSupport: false
     });
 
-    pageFlip.loadFromImages([
-        {% for i in range(1, number_of_pages + 1) %}
-            '{{render_dir}}/page_{{ "%0{}d".format(3)|format(i) }}.jpeg',
-        {% endfor %}
-    ]);
+    pageFlip.loadFromImages([]);
+
 
     function createWebSocket(url, reconnectInterval = 1000) {
         let socket;
@@ -46,6 +43,9 @@
             socket.onmessage = function(event) {
                 console.log('WebSocket message received:', event.data);
                 // Handle the received message
+
+                const data = JSON.parse(JSON.parse(event.data)).data
+                pageFlip.updateFromImages(data);
             };
 
             socket.onclose = function(event) {
@@ -73,7 +73,7 @@
     }
 
     // Usage
-    createWebSocket('ws://localhost:8000/ws'); // Reconnect every 2 seconds
+    createWebSocket('/ws'); // Reconnect every 2 seconds
 
 </script>
 

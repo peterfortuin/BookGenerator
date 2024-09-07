@@ -10,7 +10,7 @@ logger = logging.getLogger("spread")
 
 class Spread:
     @abstractmethod
-    def render(self, book: 'Book', render_dir: str, page_number: int):
+    def render(self, book: 'Book', render_dir: str, page_number: int) -> (str, str):
         pass
 
     @staticmethod
@@ -20,24 +20,38 @@ class Spread:
 
         return Image.new("RGBA", (width_in_pixels, height_in_pixels), color=0xFFFFFF)
 
-    @staticmethod
-    def save(image: Image, render_dir: str, page_number: int):
+    def save(self, image: Image, render_dir: str, suffix: str) -> str:
+        positive_hash = abs(hash(self))
+
         image = image.convert("RGB")
 
-        image.save(f"{render_dir}/page_{page_number:03d}.jpeg", dpi=(300, 300), quality=100)
+        file_path = f"{render_dir}/page_{positive_hash}_{suffix}.jpeg"
+        image.save(file_path, dpi=(300, 300), quality=100)
+
+        return file_path
+
+    def __eq__(self, other):
+        if isinstance(other, Spread):
+            return vars(self) == vars(other)
+        return False
+
+    def __hash__(self):
+        return hash(tuple(sorted(vars(self).items())))
 
 
 class TwoPageTemplateSpread(Spread):
     def __init__(self, template: TwoPageTemplate):
         self.template = template
 
-    def render(self, book: 'Book', render_dir: str, page_number: int):
+    def render(self, book: 'Book', render_dir: str, page_number: int) -> (str, str):
         logger.info(f"Rendering page {page_number}")
         spread_image = self.template.render(self.get_render_section(book.width_in_cm * 2, book.height_in_cm))
         left_page = spread_image.crop((0, 0, spread_image.width / 2, spread_image.height))
         right_page = spread_image.crop((spread_image.width / 2, 0, spread_image.width, spread_image.height))
-        self.save(left_page, render_dir, page_number)
-        self.save(right_page, render_dir, page_number + 1)
+        file_path_l = self.save(left_page, render_dir, "l")
+        file_path_r = self.save(right_page, render_dir, "r")
+
+        return file_path_l, file_path_r
 
 
 class TwoSinglePagesTemplateSpread(Spread):
@@ -45,11 +59,13 @@ class TwoSinglePagesTemplateSpread(Spread):
         self.left_template = left_template
         self.right_template = right_template
 
-    def render(self, book: 'Book', render_dir: str, page_number: int):
+    def render(self, book: 'Book', render_dir: str, page_number: int) -> (str, str):
         logger.info(f"Rendering page {page_number}")
         left_image = self.left_template.render(self.get_render_section(book.width_in_cm, book.height_in_cm))
-        self.save(left_image, render_dir, page_number)
+        file_path_l = self.save(left_image, render_dir, "l")
 
         logger.info(f"Rendering page {page_number + 1}")
         right_image = self.right_template.render(self.get_render_section(book.width_in_cm, book.height_in_cm))
-        self.save(right_image, render_dir, page_number + 1)
+        file_path_r = self.save(right_image, render_dir, "r")
+
+        return file_path_l, file_path_r

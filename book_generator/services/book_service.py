@@ -38,9 +38,13 @@ class BookService:
         self._script_watcher.start()
 
     def generate_book(self):
-        self._book = self._script_module.get_book()
+        try:
+            self._book = self._script_module.get_book()
 
-        self._thread.schedule_task(self._book.render_all_spreads(self.event_queue))
+            self._thread.schedule_task(self._book.render_all_spreads(self.event_queue))
+        except:
+            exception_type, value, traceback = sys.exc_info()
+            print(f"An exception occurred: {value}")
 
     def _load_script(self) -> ScriptModuleInterface:
         spec = importlib.util.spec_from_file_location("book_generator.script", self._book_script)

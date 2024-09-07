@@ -20,6 +20,14 @@ class Photo(Element):
 
         self.photo = correct_image_orientation(self.photo)
 
+    def __eq__(self, other):
+        if isinstance(other, Photo):
+            return (self.path, self.render_inside, self.centering) == (other.path, other.render_inside, other.centering)
+        return False
+
+    def __hash__(self):
+        return hash((self.path, self.render_inside, self.centering))
+
     def render(self, image: Image) -> Image:
         render_size = (image.width, image.height)
         photo_rgba = self.photo.convert('RGBA')

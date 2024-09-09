@@ -30,23 +30,26 @@ class Book:
         self.height_in_cm = height_in_cm
         self._render_events = asyncio.Event()
         self._render_result = None
+        self.page_paths = []
 
     async def render_all_spreads(self, event_queue: Queue):
-        page_paths = []
-        await event_queue.put(RenderUpdate(RenderState.RENDERING, page_paths))
-
         os.makedirs(self.render_dir, exist_ok=True)
 
         for index, spread in enumerate(self.spreads):
+            await event_queue.put(RenderUpdate(RenderState.RENDERING, self.page_paths))
+
             page_number = index * 2 + 1
             print(f"Rendering spread {index + 1} of {len(self.spreads)}.")
             (file_path_l, file_path_r) = spread.render(self, self.render_dir, page_number)
 
-            page_paths.append(file_path_l)
-            page_paths.append(file_path_r)
-            await event_queue.put(RenderUpdate(RenderState.RENDERING, page_paths))
+            if 0 <= index * 2 < len(self.page_paths):
+                self.page_paths[index] = file_path_l
+                self.page_paths[index + 1] = file_path_r
+            else:
+                self.page_paths.append(file_path_l)
+                self.page_paths.append(file_path_r)
 
-        await event_queue.put(RenderUpdate(RenderState.COMPLETED, page_paths))
+        await event_queue.put(RenderUpdate(RenderState.COMPLETED, self.page_paths))
 
     def fire_event(self, data: Dict[str, str]):
         print(f"Book event: {data["state"]}")

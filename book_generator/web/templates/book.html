@@ -78,6 +78,14 @@
     // Usage
     createWebSocket('/ws'); // Reconnect every 2 seconds
 
+    document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowLeft') {
+        pageFlip.flipPrev();
+    } else if (event.key === 'ArrowRight') {
+        pageFlip.flipNext();
+    }
+});
+
 </script>
 
 </body>

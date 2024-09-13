@@ -36,7 +36,8 @@ class Book:
         os.makedirs(self.render_dir, exist_ok=True)
 
         for index, spread in enumerate(self.spreads):
-            await event_queue.put(RenderUpdate(RenderState.RENDERING, self.page_paths))
+            # Disable this update until the page paths will be correct for every render cycle
+            # await event_queue.put(RenderUpdate(RenderState.RENDERING, self.page_paths))
 
             page_number = index * 2 + 1
             print(f"Rendering spread {index + 1} of {len(self.spreads)}.")

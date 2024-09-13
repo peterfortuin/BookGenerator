@@ -45,7 +45,10 @@
                 // Handle the received message
 
                 const data = JSON.parse(JSON.parse(event.data)).data
+
+                const currentPage = pageFlip.getCurrentPageIndex();
                 pageFlip.updateFromImages(data);
+                pageFlip.turnToPage(currentPage);
             };
 
             socket.onclose = function(event) {

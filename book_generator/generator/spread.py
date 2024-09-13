@@ -1,10 +1,12 @@
 import logging
 from abc import abstractmethod
 from pathlib import Path
+from typing import Optional
 
 from PIL import Image
 
 from generator.template import TwoPageTemplate, OnePageTemplate
+from templates.single_page_templates.empty_template import EmptyTemplate
 
 logger = logging.getLogger("spread")
 
@@ -60,7 +62,7 @@ class TwoPageTemplateSpread(Spread):
 
 
 class TwoSinglePagesTemplateSpread(Spread):
-    def __init__(self, left_template: OnePageTemplate, right_template: OnePageTemplate):
+    def __init__(self, left_template: Optional[OnePageTemplate] = EmptyTemplate(), right_template: Optional[OnePageTemplate] = EmptyTemplate()):
         self.left_template = left_template
         self.right_template = right_template
 

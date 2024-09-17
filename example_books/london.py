@@ -15,6 +15,6 @@ def get_book() -> Book:
             OnePhotoTemplate(Photo('https://unsplash.com/photos/g-krQzQo9mI/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG9uZG9ufGVufDB8fHx8MTcyMzQ1MjYxMXww&force=true&w=640'))
         ),
         TwoPageTemplateSpread(
-            TwoPagePhotoTemplate(Photo('https://unsplash.com/photos/GlQBrIRmaJg/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8OHx8bG9uZG9uJTIwcGFub3JhbWljfGVufDB8fHx8MTcyMzgxNTMwOHww&force=true&w=640', render_inside=False, crop_bias=50))
+            TwoPagePhotoTemplate(Photo('https://unsplash.com/photos/GlQBrIRmaJg/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8OHx8bG9uZG9uJTIwcGFub3JhbWljfGVufDB8fHx8MTcyMzgxNTMwOHww&force=true&w=640', render_inside=False, centering=50))
         )
     )
